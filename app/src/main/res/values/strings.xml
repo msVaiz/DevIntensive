@@ -1,3 +1,21 @@
 <resources>
-    <string name="app_name">DevIntensive</string>
+    <string name="app_name">Мишина Анжелика</string>
+
+    <string name="phone_hint">Мобильный</string>
+    <string name="phone_text">+7 (917) 971&#8211;11&#8211;11</string>
+    <string name="mail_hint">E-mail</string>
+    <string name="mail_text">myMail@ya.ru</string>
+    <string name="vk_hint">Профиль в VK</string>
+    <string name="vk_text">vk.com/profile</string>
+    <string name="github_hint">Репозиторий</string>
+    <string name="github_text">github.com/user/DevIntensive</string>
+    <string name="about_me_hint">О себе</string>
+    <string name="about_me">Я не волшебник.. Я только учусь</string>
+
+    <string name="rating_text">Рейтинг</string>
+    <string name="rating_value">5</string>
+    <string name="line_of_code_text">Написано строк кода</string>
+    <string name="line_of_code_value">5</string>
+    <string name="projects_text">Проектов</string>
+    <string name="projects_value">5</string>
 </resources>
