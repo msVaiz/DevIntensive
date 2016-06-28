@@ -166,10 +166,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
             View headerView = navigationView.inflateHeaderView(R.layout.drawer_header);
             //View headerView = navigationView.getHeaderView(0);
             //Object a = headerView.findViewById(R.id.user_ava);
-            mUserAvatar = (ImageView) headerView.findViewById(R.id.user_ava);;
+            mUserAvatar = (ImageView) headerView.findViewById(R.id.user_ava);
             Bitmap avatar = BitmapFactory.decodeResource(getResources(), R.drawable.user_avatar);
             RoundedAvatarDrawable roundedAvatarDrawableAD = new RoundedAvatarDrawable(avatar);
             mUserAvatar.setImageDrawable(roundedAvatarDrawableAD);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(mNavigationDrawer.isDrawerOpen(GravityCompat.START)){
+            mNavigationDrawer.closeDrawer(GravityCompat.START);
+        }
     }
 
     // 1 - режим редактирования, 0 - режим просмотра
