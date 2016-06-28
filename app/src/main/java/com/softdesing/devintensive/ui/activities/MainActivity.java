@@ -1,5 +1,7 @@
 package com.softdesing.devintensive.ui.activities;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -13,10 +15,12 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 import com.softdesing.devintensive.R;
 import com.softdesing.devintensive.data.managers.DataManager;
 import com.softdesing.devintensive.utils.ConstantManager;
+import com.softdesing.devintensive.utils.RoundedAvatarDrawable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +35,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
     private DrawerLayout mNavigationDrawer;
     private FloatingActionButton mFloatingActionButton;
     private EditText mUserPhone, mUserMail, mUserVK, mUserGit, mUserBio;
+    private ImageView mUserAvatar;
 
     private List<EditText> mUserInfoViews;
     private int mCurrentEditMode = 0;
@@ -147,6 +152,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
     }
 
     private void setupDrawer(){
+
         NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -157,6 +163,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
                 return false;
             }
         });
+            View headerView = navigationView.inflateHeaderView(R.layout.drawer_header);
+            //View headerView = navigationView.getHeaderView(0);
+            //Object a = headerView.findViewById(R.id.user_ava);
+            mUserAvatar = (ImageView) headerView.findViewById(R.id.user_ava);;
+            Bitmap avatar = BitmapFactory.decodeResource(getResources(), R.drawable.user_avatar);
+            RoundedAvatarDrawable roundedAvatarDrawableAD = new RoundedAvatarDrawable(avatar);
+            mUserAvatar.setImageDrawable(roundedAvatarDrawableAD);
     }
 
     // 1 - режим редактирования, 0 - режим просмотра
