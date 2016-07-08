@@ -29,7 +29,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text = "Мишина Анжелика"
-            android:textColor = "@color/white"
+            android:textColor = "@color/color_white"
             android:textSize = "14sp"
             android:fontFamily = "sans-serif-medium"/>
 
@@ -38,7 +38,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text = "myMail@gmail.com"
-            android:textColor = "@color/white"
+            android:textColor = "@color/color_white"
             android:textSize = "14sp"
             android:fontFamily = "sans-serif"/>
 
