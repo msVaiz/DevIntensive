@@ -19,7 +19,7 @@ gradlew.bat
 /captures
 
 # User-specific configurations
-/.idea
+.idea
 /app/*.iml
 *.iml
 
