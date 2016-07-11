@@ -18,4 +18,14 @@
     <string name="line_of_code_value">5</string>
     <string name="projects_text">Проектов</string>
     <string name="projects_value">5</string>
+    <string name="user_profile.placeholder.image">Изменить фотографию профиля</string>
+    <string name="user_profile.dialog.gallery">Загрузить из галереи</string>
+    <string name="user_profile.dialog.camera">Сделать снимок</string>
+    <string name="user_profile.dialog.cancel">Отмена</string>
+    <string name="user_profile.dialog.title">Изменить фотографию профиля</string>
+    <string name="user_profile.chose.message">Выберите фото</string>
+    <string name="title_activity_authorization">AuthorizationActivity</string>
+    <string name="authorization.text">ВОЙТИ</string>
+    <string name="authorization.password_text">Пароль</string>
+    <string name="authorization.forget_password_text">Забыли пароль?</string>
 </resources>
