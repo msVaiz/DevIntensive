@@ -5,8 +5,6 @@ import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -35,12 +33,13 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.softdesing.devintensive.R;
 import com.softdesing.devintensive.data.managers.DataManager;
 import com.softdesing.devintensive.utils.ConstantManager;
-import com.softdesing.devintensive.utils.RoundedAvatarDrawable;
+import com.softdesing.devintensive.utils.TransformToCircle;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -79,6 +78,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
     @BindView(R.id.repository_et) EditText mUserGit;
     @BindView(R.id.about_me_et) EditText mUserBio;
 
+    @BindView(R.id.user_info_rait_txt) TextView mUserValueRating;
+    @BindView(R.id.user_info_code_lines_txt) TextView mUserValueCodeLines;
+    @BindView(R.id.user_info_projects_txt) TextView mUserValueProjects;
+
+    private List<TextView> mUserValueViews;
     private List<EditText> mUserInfoViews;
     private DataManager mDataManager;
     private File mPhotoFile = null;
@@ -114,6 +118,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
         mUserInfoViews.add(mUserGit);
         mUserInfoViews.add(mUserBio);
 
+        mUserValueViews = new ArrayList<>();
+        mUserValueViews.add(mUserValueRating);
+        mUserValueViews.add(mUserValueCodeLines);
+        mUserValueViews.add(mUserValueProjects);
+
         mFloatingActionButton.setOnClickListener(this);
         mProfilePlaceholder.setOnClickListener(this);
         mCallImage.setOnClickListener(this);
@@ -123,7 +132,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
 
         setupToolbar();
         setupDrawer();
-        loadUserInfoValue();
+        initUserFields();
+        initUserInfoValues();
         Picasso.with(this)
                 .load(mDataManager.getPreferencesManager().loadUserPhoto())
                 .placeholder(R.drawable.user_bg)
@@ -178,7 +188,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
     protected void onPause() {
         super.onPause();
         Log.d(TAG,"onPause");
-        saveUserInfoValue();
+        saveUserFields();
     }
 
     /**
@@ -259,6 +269,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
         setSupportActionBar(mToolbar);
         ActionBar actionBar = getSupportActionBar();
 
+        String temp = mDataManager.getPreferencesManager().loadUserName()[0] + " " + mDataManager.getPreferencesManager().loadUserName()[1];
+        actionBar.setTitle(temp);
+
         mAppBarParams = (AppBarLayout.LayoutParams) mCollapsingToolbar.getLayoutParams();
         if (actionBar != null){
             actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
@@ -278,13 +291,23 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
                 return false;
             }
         });
-            View headerView = navigationView.inflateHeaderView(R.layout.drawer_header);
-            //View headerView = navigationView.getHeaderView(0);
-            //Object a = headerView.findViewById(R.id.user_ava);
-            ImageView mUserAvatar = (ImageView) headerView.findViewById(R.id.user_ava);
-            Bitmap avatar = BitmapFactory.decodeResource(getResources(), R.drawable.user_avatar);
-            RoundedAvatarDrawable roundedAvatarDrawableAD = new RoundedAvatarDrawable(avatar);
-            mUserAvatar.setImageDrawable(roundedAvatarDrawableAD);
+        View headerView = navigationView.inflateHeaderView(R.layout.drawer_header);
+        //View headerView = navigationView.getHeaderView(0);
+        //Object a = headerView.findViewById(R.id.user_ava);
+        ImageView mUserAvatar = (ImageView) headerView.findViewById(R.id.user_ava);
+        TextView mUserName = (TextView) headerView.findViewById(R.id.user_name_txt);
+        TextView mUserEmail = (TextView) headerView.findViewById(R.id.user_email_txt);
+
+        String temp = mDataManager.getPreferencesManager().loadUserName()[0] + " " + mDataManager.getPreferencesManager().loadUserName()[1];
+        mUserName.setText(temp);
+        mUserEmail.setText(mDataManager.getPreferencesManager().loadUserProfileData().get(1));
+
+
+        Picasso.with(this)
+                .load(mDataManager.getPreferencesManager().loadUserAvatar())
+                .transform(new TransformToCircle())
+                .into(mUserAvatar);
+
     }
 
 
@@ -449,7 +472,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
                 hideProfilePlaceholder();
                 unlockToolbar();
                 mCollapsingToolbar.setExpandedTitleColor(getResources().getColor(R.color.color_white));
-                saveUserInfoValue();
+                saveUserFields();
             }
         }
     }
@@ -478,19 +501,26 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
         return matcher.matches();
     }
 
-    private void loadUserInfoValue(){
+    private void initUserFields(){
         List<String> userData = mDataManager.getPreferencesManager().loadUserProfileData();
         for (int i = 0; i < userData.size(); i++) {
             mUserInfoViews.get(i).setText(userData.get(i));
         }
     }
 
-    private void saveUserInfoValue(){
+    private void saveUserFields(){
         List<String> userData = new ArrayList<>();
         for (EditText userFieldView  : mUserInfoViews) {
             userData.add(userFieldView.getText().toString());
         }
         mDataManager.getPreferencesManager().saveUserProfileData(userData);
+    }
+
+    private void initUserInfoValues(){
+        List<String> userData = mDataManager.getPreferencesManager().loadUserProfileValues();
+        for (int i = 0; i < userData.size(); i++){
+            mUserValueViews.get(i).setText(userData.get(i));
+        }
     }
 
     /**

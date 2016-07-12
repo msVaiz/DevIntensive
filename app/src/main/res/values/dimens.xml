@@ -20,7 +20,7 @@
 
     <!--Font sizes-->
 
-    <dimen name="font_small_12">12sp</dimen>
+    <dimen name="font_small_14">14sp</dimen>
     <dimen name="font_normal_16">16sp</dimen>
     <dimen name="font_large_18">18sp</dimen>
     <dimen name="font_larger_22">22sp</dimen>
@@ -49,6 +49,5 @@
 
     <!--Size authorization button-->
 
-    <dimen name="button_width">125dp</dimen>
-    <dimen name="button_height">36dp</dimen>
+    <dimen name="button_width_126">126dp</dimen>
 </resources>
