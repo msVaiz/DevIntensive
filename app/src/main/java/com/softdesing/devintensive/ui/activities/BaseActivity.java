@@ -18,7 +18,7 @@ public class BaseActivity extends AppCompatActivity{
 
     public void showProgress(){
 
-        if (mProgressDialog==null){
+        if (mProgressDialog == null){
             mProgressDialog = new ProgressDialog(this, R.style.custom_dialog);
             mProgressDialog.setCancelable(false);
             mProgressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));

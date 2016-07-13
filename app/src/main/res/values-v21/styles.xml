@@ -9,4 +9,11 @@
         <item name="android:statusBarColor">@color/color_accent</item>
         <item name="android:windowTranslucentStatus">true</item>
     </style>
+
+    <!-- Authorization Button-->
+
+    <style name="AppTheme.Button.Red" parent="Base.Widget.AppCompat.Button">
+        <item name="android:colorButtonNormal">@color/color_accent</item>
+        <item name="android:textColor">@color/color_white</item>
+    </style>
 </resources>
