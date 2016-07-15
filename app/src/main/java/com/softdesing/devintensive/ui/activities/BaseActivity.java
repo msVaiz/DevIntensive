@@ -3,9 +3,11 @@ package com.softdesing.devintensive.ui.activities;
 
 import android.app.ProgressDialog;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Display;
 import android.widget.Toast;
 
 import com.softdesing.devintensive.R;
@@ -15,6 +17,20 @@ public class BaseActivity extends AppCompatActivity{
 
     static final String TAG = ConstantManager.TAG_PREFIX + "BaseActivity";
     protected ProgressDialog mProgressDialog;
+    static Point size = null;
+
+    /**
+     * Dispatch onStart() to all fragments.  Ensure any created loaders are
+     * now started.
+     */
+    @Override
+    protected void onStart() {
+        super.onStart();
+        size = new Point();
+        Display display = getWindowManager().getDefaultDisplay();
+        display.getSize(size);
+        size.x = Math.max(size.x, size.y);
+    }
 
     public void showProgress(){
 
@@ -46,5 +62,13 @@ public class BaseActivity extends AppCompatActivity{
 
     public void showToast(String message){
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+    }
+
+    public static Point getUserProfileImageSize(){
+
+        if (size == null) {
+            Log.d(TAG, "Все плохо");
+        }
+        return size;
     }
 }

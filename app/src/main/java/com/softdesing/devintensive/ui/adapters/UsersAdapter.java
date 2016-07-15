@@ -1,6 +1,7 @@
 package com.softdesing.devintensive.ui.adapters;
 
 import android.content.Context;
+import android.graphics.Point;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 
 import com.softdesing.devintensive.R;
 import com.softdesing.devintensive.data.network.res.UserListRes;
+import com.softdesing.devintensive.ui.activities.BaseActivity;
 import com.softdesing.devintensive.ui.view.AspectRatioImageView;
 import com.squareup.picasso.Picasso;
 
@@ -37,9 +39,11 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
     @Override
     public void onBindViewHolder(UsersAdapter.UserViewHolder holder, int position) {
         UserListRes.UserData user = mUsers.get(position);
+        Point size = BaseActivity.getUserProfileImageSize();
 
         Picasso.with(mContext)
                 .load(user.getPublicInfo().getPhoto())
+                .resize(size.x, 0)
                 .placeholder(mContext.getResources().getDrawable(R.drawable.user_bg))
                 .error(mContext.getResources().getDrawable(R.drawable.user_bg))
                 .into(holder.userPhoto);

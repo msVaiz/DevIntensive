@@ -11,7 +11,6 @@ import com.softdesing.devintensive.R;
 
 import java.util.List;
 
-
 public class RepositoriesAdapter extends BaseAdapter {
 
     private List<String> mRepoList;
