@@ -44,13 +44,13 @@
 
     <style name="view_line.horizontal" parent="view_line">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">@dimen/line_size</item>
+        <item name="android:layout_height">@dimen/line_size_1</item>
         <item name="android:layout_marginLeft">@dimen/spacing_larger_72</item>
     </style>
 
     <style name="view_line.vertical" parent="view_line">
-        <item name="android:layout_width">@dimen/line_size</item>
-        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_width">@dimen/line_size_1</item>
+        <item name="android:layout_height">@dimen/size_medium_56</item>
     </style>
 
     <!-- Style edit text -->
@@ -109,6 +109,14 @@
     <style name="AppTheme.Button.Red" parent="Base.Widget.AppCompat.Button">
         <item name="colorButtonNormal">@color/color_accent</item>
         <item name="android:textColor">@color/color_white</item>
+    </style>
+
+    <!-- Toolbar -->
+
+    <style name="ToolBarStyle" parent="Theme.AppCompat">
+        <item name="android:textColorPrimary">@color/color_white</item>
+        <item name="android:textColorSecondary">@color/color_white</item>
+        <item name="android:actionMenuTextColor">@color/color_white</item>
     </style>
 
 </resources>

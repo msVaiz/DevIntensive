@@ -25,6 +25,8 @@ public interface ConstantManager {
     String USER_FIRST_NAME_KEY = "USER_FIRST_NAME_KEY";
     String USER_SECOND_NAME_KEY = "USER_SECOND_NAME_KEY";
 
+    String PARCELABLE_KEY = "PARCELABLE_KEY";
+
     int LOAD_PROFILE_PHOTO = 1;
     int REQUEST_CAMERA_PICTURE = 99;
     int REQUEST_GALLERY_PICTURE = 88;
@@ -33,5 +35,4 @@ public interface ConstantManager {
 
     int EDIT_MODE_OFF = 0;
     int EDIT_MODE_ON = 1;
-
 }

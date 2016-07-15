@@ -1,80 +1,14 @@
 <android.support.v4.widget.NestedScrollView
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    app:layout_behavior=".ui.behaviors.CustomNestedScrollBehavior"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="112dp"
-            android:orientation="horizontal"
-            android:paddingTop="@dimen/padding_size_28"
-            android:paddingBottom="@dimen/padding_size_28"
-            android:background="@color/grey">
-
-            <LinearLayout
-                style="@style/status_bar_item"
-                android:layout_weight="0.25">
-
-                <TextView
-                    android:id="@+id/user_info_rait_txt"
-                    style="@style/text_view"
-                    android:text="@string/rating_value"
-                    android:textSize="@dimen/font_larger_24"/>
-                <TextView
-                    style="@style/text_view"
-                    android:text="@string/rating_text"
-                    android:textSize="@dimen/font_normal_16"/>
-            </LinearLayout>
-
-            <View
-                style="@style/view_line.vertical">
-            </View>
-
-            <LinearLayout
-                style="@style/status_bar_item"
-                android:layout_weight="0.5">
-
-                <TextView
-                    android:id="@+id/user_info_code_lines_txt"
-                    style="@style/text_view"
-                    android:text="@string/line_of_code_value"
-                    android:textSize="@dimen/font_larger_24"/>
-                <TextView
-                    style="@style/text_view"
-                    android:text="@string/line_of_code_text"
-                    android:textSize="@dimen/font_normal_16"/>
-
-            </LinearLayout>
-
-            <View
-                style="@style/view_line.vertical">
-            </View>
-
-            <LinearLayout
-                style="@style/status_bar_item"
-                android:layout_weight="0.25">
-
-                <TextView
-                    android:id="@+id/user_info_projects_txt"
-                    style="@style/text_view"
-                    android:text="@string/projects_value"
-                    android:textSize="@dimen/font_larger_24"/>
-
-                <TextView
-                    style="@style/text_view"
-                    android:text="@string/projects_text"
-                    android:textSize="@dimen/font_normal_16"/>
-
-            </LinearLayout>
-
-        </LinearLayout>
 
         <LinearLayout
             style="@style/item_linear_layout_horizontal">

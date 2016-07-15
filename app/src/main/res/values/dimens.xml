@@ -37,12 +37,13 @@
     <!-- Other -->
 
     <dimen name="size_empty_0">0dp</dimen>
-    <dimen name="line_size">1dp</dimen>
+    <dimen name="line_size_1">1dp</dimen>
     <dimen name="corner_radius_2">2dp</dimen>
 
     <dimen name="padding_size_28">28dp</dimen>
 
     <dimen name="profile_image_size">256dp</dimen>
+    <dimen name="user_info_size">112dp</dimen>
     <dimen name="fab_right_space">16dp</dimen>
     <dimen name="placeholder_photo_size_90">90dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
