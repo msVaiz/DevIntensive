@@ -4,6 +4,7 @@ import com.softdesing.devintensive.data.network.RestService;
 import com.softdesing.devintensive.data.network.ServiceGenerator;
 import com.softdesing.devintensive.data.network.req.UserLoginReq;
 import com.softdesing.devintensive.data.network.res.UploadPhotoRes;
+import com.softdesing.devintensive.data.network.res.UserListRes;
 import com.softdesing.devintensive.data.network.res.UserModelRes;
 
 import okhttp3.MultipartBody;
@@ -40,6 +41,10 @@ public class DataManager {
 
     public Call<UploadPhotoRes> uploadPhoto (String userId, MultipartBody.Part file){
         return mRestService.uploadPhoto(userId, file);
+    }
+
+    public Call<UserListRes> getUserList(){
+        return mRestService.getUserList();
     }
 
     //end region
