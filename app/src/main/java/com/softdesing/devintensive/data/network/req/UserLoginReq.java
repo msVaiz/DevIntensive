@@ -1,6 +1,5 @@
 package com.softdesing.devintensive.data.network.req;
 
-
 public class UserLoginReq {
 
     private String email;

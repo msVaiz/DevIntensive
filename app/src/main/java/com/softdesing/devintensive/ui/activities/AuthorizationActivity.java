@@ -2,6 +2,7 @@ package com.softdesing.devintensive.ui.activities;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.nfc.Tag;
 import android.os.Handler;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -51,11 +52,12 @@ public class AuthorizationActivity extends BaseActivity implements View.OnClickL
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_authorization);
 
-        mDataManager = DataManager.getINSTANCE();
         ButterKnife.bind(this);
+        mDataManager = DataManager.getINSTANCE();
         mUserDao = mDataManager.getDaoSession().getUserDao();
         mRepositoryDao = mDataManager.getDaoSession().getRepositoryDao();
 
@@ -63,10 +65,6 @@ public class AuthorizationActivity extends BaseActivity implements View.OnClickL
         mSignIn.setOnClickListener(this);
     }
 
-    /**
-     * метод обрабатывает нажатие на элементы View
-     * @param view - объект на которое произошло нажатие
-     */
     @Override
     public void onClick(View view) {
         switch (view.getId()){
@@ -79,11 +77,6 @@ public class AuthorizationActivity extends BaseActivity implements View.OnClickL
         }
     }
 
-    /**
-     *  вспомогательный метод для показа сообщения пользователю
-     *  в материальном стиле
-     * @param message - сообщение для пользователя
-     */
     private void showSnackBar(String message){
         Snackbar.make(mCoordinatorLayout, message, Snackbar.LENGTH_LONG).show();
     }
@@ -93,13 +86,19 @@ public class AuthorizationActivity extends BaseActivity implements View.OnClickL
      *  восстановления пароля
      */
     private void rememberPassword(){
+        Log.d(TAG, "rememberPassword");
         Intent rememberIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://devintensive.softdesign-apps.ru/forgotpass"));
-        startActivity(rememberIntent);
+        Intent chosenIntent = Intent.createChooser(rememberIntent, "Что использовать?");
+        startActivity(chosenIntent);
     }
 
+    /**
+     * метод вызывается при успешной авторизации
+     * @param userModel
+     */
     private void loginSuccess(UserModelRes userModel){
+        Log.d(TAG, "loginSuccess");
 
-        //showSnackBar(response.body().getData().getToken());
         mDataManager.getPreferencesManager().saveAuthToken(userModel.getData().getToken());
         mDataManager.getPreferencesManager().saveUserId(userModel.getData().getUser().getId());
 
@@ -107,18 +106,22 @@ public class AuthorizationActivity extends BaseActivity implements View.OnClickL
         saveUserProfileData(userModel);
         saveUserInDb();
 
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                //Intent loginIntent = new Intent(this, MainActivity.class);
-                Intent loginIntent = new Intent(AuthorizationActivity.this, UserListActivity.class);
-                startActivity(loginIntent);
-            }
-        }, AppConfig.START_DELAY);
+        Intent loginIntent = new Intent(AuthorizationActivity.this, MainActivity.class);
+        startActivity(loginIntent);
+
+//        Handler handler = new Handler();
+//        handler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                //Intent loginIntent = new Intent(this, MainActivity.class);
+//                Intent loginIntent = new Intent(AuthorizationActivity.this, UserListActivity.class);
+//                startActivity(loginIntent);
+//            }
+//        }, AppConfig.START_DELAY);
     }
 
     private void signIn(){
+        Log.d(TAG, "signIn");
 
         if (NetworkStatusChecker.isNetworkAvailable(this)) {
 
@@ -137,7 +140,9 @@ public class AuthorizationActivity extends BaseActivity implements View.OnClickL
 
                 @Override
                 public void onFailure(Call<UserModelRes> call, Throwable t) {
-                    //// TODO: 7/11/2016 обработать ошибки
+                    showSnackBar("Что-то пошло не так!");
+                    t.printStackTrace();
+                    Log.e(TAG, t.toString());
                 }
             });
         } else {
@@ -145,16 +150,29 @@ public class AuthorizationActivity extends BaseActivity implements View.OnClickL
         }
     }
 
+    /**
+     * метод сохраняет данные о рейтинге, строчках кода и проектах в SharedPreferences
+     * @param userModel - тело ответа от сервера
+     */
     private void saveUserValues(UserModelRes userModel){
+        Log.d(TAG, "saveUserValues");
+
         int[] userValues = {
                 userModel.getData().getUser().getProfileValues().getRating(),
                 userModel.getData().getUser().getProfileValues().getLinesCode(),
                 userModel.getData().getUser().getProfileValues().getProjects()
         };
         mDataManager.getPreferencesManager().saveUserProfileValues(userValues);
+
     }
 
+    /**
+     * метод сохраняет прочие данные о пользователе в SharedPreferences
+     * @param userModel - тело ответа от сервера
+     */
+
     private void saveUserProfileData(UserModelRes userModel){
+        Log.d(TAG, "saveUserProfileData");
 
         List<String> userInfoFields = new ArrayList<>();
         userInfoFields.add(userModel.getData().getUser().getContacts().getPhone());
@@ -171,7 +189,11 @@ public class AuthorizationActivity extends BaseActivity implements View.OnClickL
         mDataManager.getPreferencesManager().saveUserName(name);
     }
 
+    /**
+     * метод запрашивает у сервера список всех пользователей и сохранятх их в БД
+     */
     private void saveUserInDb(){
+        Log.d(TAG, "saveUserInDb");
 
         Call<UserListRes> call = mDataManager.getUserListFromNetwork();
         call.enqueue(new Callback<UserListRes>() {
@@ -206,7 +228,6 @@ public class AuthorizationActivity extends BaseActivity implements View.OnClickL
             @Override
             public void onFailure(Call<UserListRes> call, Throwable t) {
                 Log.e(TAG, "onFailure() " + t.toString());
-                hideProgress();
                 showSnackBar("Неудалось загрузить данные с сервера");
             }
         });

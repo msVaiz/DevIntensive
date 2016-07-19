@@ -1,7 +1,6 @@
 package com.softdesing.devintensive.ui.adapters;
 
 import android.content.Context;
-import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -14,7 +13,6 @@ import android.widget.TextView;
 import com.softdesing.devintensive.R;
 import com.softdesing.devintensive.data.managers.DataManager;
 import com.softdesing.devintensive.data.storage.models.User;
-import com.softdesing.devintensive.ui.activities.BaseActivity;
 import com.softdesing.devintensive.ui.view.AspectRatioImageView;
 import com.softdesing.devintensive.utils.ConstantManager;
 import com.squareup.picasso.Callback;
@@ -47,7 +45,6 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
 
         final User user = mUsers.get(position);
         final String userPhoto;
-        Point size = BaseActivity.getUserProfileImageSize();
 
         if (user.getPhoto().isEmpty()){
             userPhoto = "null";

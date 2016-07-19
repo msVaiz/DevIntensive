@@ -147,7 +147,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
         initUserInfoValues();
         Picasso.with(this)
                 .load(mDataManager.getPreferencesManager().loadUserPhoto())
+                .error(R.drawable.user_bg)
                 .placeholder(R.drawable.user_bg)
+                .fit()
+                .centerCrop()
                 .into(mProfileImage);
 
         if(savedInstanceState == null){
@@ -246,22 +249,26 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
 
             case R.id.call_img:
                 Intent callNumberIntent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + mUserPhone.getText().toString()));
-                startActivity(callNumberIntent);
+                Intent chosenIntentCall = Intent.createChooser(callNumberIntent, "Что использовать?");
+                startActivity(chosenIntentCall);
                 break;
 
             case R.id.send_img:
                 Intent sendEmailIntent = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:" + mUserMail.getText().toString()));
-                startActivity(sendEmailIntent);
+                Intent chosenIntentSend = Intent.createChooser(sendEmailIntent, "Что использовать?");
+                startActivity(chosenIntentSend);
                 break;
 
             case R.id.vk_img:
                 Intent openVkProfileIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://" + mUserVK.getText().toString()));
-                startActivity(openVkProfileIntent);
+                Intent chosenIntentVk = Intent.createChooser(openVkProfileIntent, "Что использовать?");
+                startActivity(chosenIntentVk);
                 break;
 
             case R.id.github_img:
                 Intent openGithubProfileIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://" + mUserGit.getText().toString()));
-                startActivity(openGithubProfileIntent);
+                Intent chosenIntentGit = Intent.createChooser(openGithubProfileIntent, "Что использовать?");
+                startActivity(chosenIntentGit);
                 break;
         }
     }
@@ -296,9 +303,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem item) {
-                showSnackBar(item.getTitle().toString());
-                item.setChecked(true);
-                mNavigationDrawer.closeDrawer(GravityCompat.START);
+                switch (item.getItemId()) {
+                    case R.id.team_menu:
+                        mNavigationDrawer.closeDrawer(GravityCompat.START);
+                        Intent intent = new Intent(MainActivity.this, UserListActivity.class);
+                        startActivity(intent);
+                        break;
+                    case R.id.user_profile_menu:
+                        mNavigationDrawer.closeDrawer(GravityCompat.START);
+                        break;
+                }
                 return false;
             }
         });
@@ -312,7 +326,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
         String temp = mDataManager.getPreferencesManager().loadUserName()[0] + " " + mDataManager.getPreferencesManager().loadUserName()[1];
         mUserName.setText(temp);
         mUserEmail.setText(mDataManager.getPreferencesManager().loadUserProfileData().get(1));
-
 
         Picasso.with(this)
                 .load(mDataManager.getPreferencesManager().loadUserAvatar())
@@ -740,14 +753,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
         return image;
     }
 
-    /**
-     *  метод размещает
-     *  @param selectedImage
-     */
 
     private void insertProfileImage(Uri selectedImage) {
         Picasso.with(this)
                 .load(selectedImage)
+                .fit()
+                .centerCrop()
                 .into(mProfileImage);
 
         flag = true;

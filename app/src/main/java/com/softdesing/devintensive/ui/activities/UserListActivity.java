@@ -3,6 +3,7 @@ package com.softdesing.devintensive.ui.activities;
 import android.content.Intent;
 import android.os.Handler;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
@@ -15,7 +16,10 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.SearchView;
+import android.widget.TextView;
 
 import com.softdesing.devintensive.R;
 import com.softdesing.devintensive.data.managers.DataManager;
@@ -24,6 +28,8 @@ import com.softdesing.devintensive.data.storage.models.User;
 import com.softdesing.devintensive.data.storage.models.UserDTO;
 import com.softdesing.devintensive.ui.adapters.UsersAdapter;
 import com.softdesing.devintensive.utils.ConstantManager;
+import com.softdesing.devintensive.utils.TransformToCircle;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -53,7 +59,7 @@ public class UserListActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_list);
-        Log.d(TAG, "onCreate()");
+        Log.d(TAG, "onCreate");
 
         ButterKnife.bind(this);
         mDataManager = DataManager.getINSTANCE();
@@ -80,7 +86,7 @@ public class UserListActivity extends BaseActivity {
     }
 
     private void loadUsersFromDb() {
-        Log.d(TAG, "loadUsersFromDb()");
+        Log.d(TAG, "loadUsersFromDb");
 
         if (mDataManager.getUserListFromDb().size() == 0){
             showSnackbar("Список пользователей не может быть загружен");
@@ -126,8 +132,39 @@ public class UserListActivity extends BaseActivity {
     }
 
     private void setupDrawer() {
-        Log.d(TAG, "setupDrawer()");
-        //// TODO: 7/14/2016 реализовать переход в другую активити при клике по элементу меню в NavigatoinDrawer
+        Log.d(TAG, "setupDrawer");
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.team_menu:
+                        mNavigationDrawer.closeDrawer(GravityCompat.START);
+                        break;
+                    case R.id.user_profile_menu:
+                        mNavigationDrawer.closeDrawer(GravityCompat.START);
+                        finish();
+                        break;
+                }
+                return false;
+            }
+        });
+        View headerView = navigationView.inflateHeaderView(R.layout.drawer_header);
+        //View headerView = navigationView.getHeaderView(0);
+        //Object a = headerView.findViewById(R.id.user_ava);
+        ImageView mUserAvatar = (ImageView) headerView.findViewById(R.id.user_ava);
+        TextView mUserName = (TextView) headerView.findViewById(R.id.user_name_txt);
+        TextView mUserEmail = (TextView) headerView.findViewById(R.id.user_email_txt);
+
+        String temp = mDataManager.getPreferencesManager().loadUserName()[0] + " " + mDataManager.getPreferencesManager().loadUserName()[1];
+        mUserName.setText(temp);
+        mUserEmail.setText(mDataManager.getPreferencesManager().loadUserProfileData().get(1));
+
+        Picasso.with(this)
+                .load(mDataManager.getPreferencesManager().loadUserAvatar())
+                .transform(new TransformToCircle())
+                .into(mUserAvatar);
     }
 
     private void setupToolbar() {
@@ -165,6 +202,7 @@ public class UserListActivity extends BaseActivity {
     }
 
     private void showUsers(List<User> users){
+        Log.d(TAG, "showUsers");
 
         mUsers = users;
         mUsersAdapter = new UsersAdapter(mUsers, new UsersAdapter.UserViewHolder.CustomClickListener() {
@@ -191,7 +229,10 @@ public class UserListActivity extends BaseActivity {
         };
 
         mHandler.removeCallbacks(searchUsers);
-        mHandler.postDelayed(searchUsers, ConstantManager.SEARCH_DELAY);
-
+        if (query.isEmpty()){
+            mHandler.postDelayed(searchUsers, 0);
+        } else {
+            mHandler.postDelayed(searchUsers, ConstantManager.SEARCH_DELAY);
+        }
     }
 }

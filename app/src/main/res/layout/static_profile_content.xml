@@ -17,10 +17,11 @@
                 style="@style/icon.left"
                 android:src="@drawable/github_circle_24dp"/>
 
-            <ListView
+            <LinearLayout
                 android:id="@+id/repositories_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="vertical"
                 android:layout_marginLeft="@dimen/spacing_medium_32"/>
 
         </LinearLayout>
