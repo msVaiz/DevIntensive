@@ -28,4 +28,5 @@
     <string name="authorization.text">ВОЙТИ</string>
     <string name="authorization.password_text">Пароль</string>
     <string name="authorization.forget_password_text">Забыли пароль?</string>
+    <string name="search_txt">Поиск пользователя</string>
 </resources>

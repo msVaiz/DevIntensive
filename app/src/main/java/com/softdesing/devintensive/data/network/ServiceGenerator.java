@@ -1,9 +1,11 @@
 package com.softdesing.devintensive.data.network;
 
-
+import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.softdesing.devintensive.data.network.interceptors.HeaderInterceptor;
 import com.softdesing.devintensive.utils.AppConfig;
+import com.softdesing.devintensive.utils.DevintensiveApplication;
 
+import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -31,7 +33,8 @@ public class ServiceGenerator {
 
         httpClient.addInterceptor(new HeaderInterceptor());
         httpClient.addInterceptor(logging);
-
+        httpClient.cache(new Cache(DevintensiveApplication.getContext().getCacheDir(), Integer.MAX_VALUE));
+        httpClient.addNetworkInterceptor(new StethoInterceptor());
 
         Retrofit retrofit = sBuilder
                 .client(httpClient.build())

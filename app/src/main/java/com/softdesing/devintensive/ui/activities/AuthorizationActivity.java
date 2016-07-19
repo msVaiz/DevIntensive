@@ -2,9 +2,11 @@ package com.softdesing.devintensive.ui.activities;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Handler;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,7 +15,13 @@ import android.widget.TextView;
 import com.softdesing.devintensive.R;
 import com.softdesing.devintensive.data.managers.DataManager;
 import com.softdesing.devintensive.data.network.req.UserLoginReq;
+import com.softdesing.devintensive.data.network.res.UserListRes;
 import com.softdesing.devintensive.data.network.res.UserModelRes;
+import com.softdesing.devintensive.data.storage.models.Repository;
+import com.softdesing.devintensive.data.storage.models.RepositoryDao;
+import com.softdesing.devintensive.data.storage.models.User;
+import com.softdesing.devintensive.data.storage.models.UserDao;
+import com.softdesing.devintensive.utils.AppConfig;
 import com.softdesing.devintensive.utils.ConstantManager;
 import com.softdesing.devintensive.utils.NetworkStatusChecker;
 
@@ -29,8 +37,11 @@ import retrofit2.Response;
 
 public class AuthorizationActivity extends BaseActivity implements View.OnClickListener {
 
-    static final String TAG = ConstantManager.TAG_PREFIX + "AuthorizationActivity";
+    static final String TAG = ConstantManager.TAG_PREFIX + "AuthActivity";
+
     private DataManager mDataManager;
+    private RepositoryDao mRepositoryDao;
+    private UserDao mUserDao;
 
     @BindView(R.id.auth_button) Button mSignIn;
     @BindView(R.id.remember_txt) TextView mRememberPassword;
@@ -45,6 +56,8 @@ public class AuthorizationActivity extends BaseActivity implements View.OnClickL
 
         mDataManager = DataManager.getINSTANCE();
         ButterKnife.bind(this);
+        mUserDao = mDataManager.getDaoSession().getUserDao();
+        mRepositoryDao = mDataManager.getDaoSession().getRepositoryDao();
 
         mRememberPassword.setOnClickListener(this);
         mSignIn.setOnClickListener(this);
@@ -92,8 +105,17 @@ public class AuthorizationActivity extends BaseActivity implements View.OnClickL
 
         saveUserValues(userModel);
         saveUserProfileData(userModel);
-        Intent loginIntent = new Intent(this, MainActivity.class);
-        startActivity(loginIntent);
+        saveUserInDb();
+
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                //Intent loginIntent = new Intent(this, MainActivity.class);
+                Intent loginIntent = new Intent(AuthorizationActivity.this, UserListActivity.class);
+                startActivity(loginIntent);
+            }
+        }, AppConfig.START_DELAY);
     }
 
     private void signIn(){
@@ -147,5 +169,56 @@ public class AuthorizationActivity extends BaseActivity implements View.OnClickL
 
         String[] name = {userModel.getData().getUser().getFirstName(), userModel.getData().getUser().getSecondName()};
         mDataManager.getPreferencesManager().saveUserName(name);
+    }
+
+    private void saveUserInDb(){
+
+        Call<UserListRes> call = mDataManager.getUserListFromNetwork();
+        call.enqueue(new Callback<UserListRes>() {
+            @Override
+            public void onResponse(Call<UserListRes> call, Response<UserListRes> response) {
+                try {
+                    if (response.code() == 200) {
+
+                        List<Repository> allRepositories = new ArrayList<Repository>();
+                        List<User> allUsers = new ArrayList<User>();
+
+                        for (UserListRes.UserData userRes : response.body().getData()) {
+                            allRepositories.addAll(getRepoListFromUserRes(userRes));
+                            allUsers.add(new User(userRes));
+                        }
+
+                        mRepositoryDao.insertOrReplaceInTx(allRepositories);
+                        mUserDao.insertOrReplaceInTx(allUsers);
+
+                    } else {
+
+                        showSnackBar("Список пользователей не может быть получен");
+                        Log.e(TAG, "onResponse: " + String.valueOf(response.errorBody().source()));
+                    }
+
+                } catch (NullPointerException e) {
+                    e.printStackTrace();
+                    showSnackBar("Что-то пошло не так");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserListRes> call, Throwable t) {
+                Log.e(TAG, "onFailure() " + t.toString());
+                hideProgress();
+                showSnackBar("Неудалось загрузить данные с сервера");
+            }
+        });
+    }
+
+    private List<Repository> getRepoListFromUserRes(UserListRes.UserData userData) {
+
+        final String userId = userData.getId();
+        List<Repository> reposirories = new ArrayList<>();
+        for (UserModelRes.Repo repositoryRes : userData.getRepositories().getRepo()){
+            reposirories.add(new Repository(repositoryRes, userId));
+        }
+        return reposirories;
     }
 }

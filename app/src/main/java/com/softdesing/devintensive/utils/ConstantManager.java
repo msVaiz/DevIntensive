@@ -35,4 +35,5 @@ public interface ConstantManager {
 
     int EDIT_MODE_OFF = 0;
     int EDIT_MODE_ON = 1;
+    int SEARCH_DELAY = 1500;
 }
