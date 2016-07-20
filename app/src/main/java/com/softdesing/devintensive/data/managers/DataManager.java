@@ -59,6 +59,10 @@ public class DataManager {
         return mRestService.loginUser(userLoginReq);
     }
 
+    public Call<UserModelRes> loginWithToken (String userId){
+        return mRestService.loginWithToken(userId);
+    }
+
     public Call<UploadPhotoRes> uploadPhoto (String userId, MultipartBody.Part file){
         return mRestService.uploadPhoto(userId, file);
     }

@@ -2,8 +2,6 @@ package com.softdesing.devintensive.ui.activities;
 
 
 import android.app.ProgressDialog;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
@@ -22,11 +20,12 @@ public class BaseActivity extends AppCompatActivity{
      */
 
     public void showProgress(){
+        Log.d(TAG, "Show progress");
 
         if (mProgressDialog == null){
             mProgressDialog = new ProgressDialog(this, R.style.custom_dialog);
             mProgressDialog.setCancelable(false);
-            mProgressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            mProgressDialog.getWindow().setBackgroundDrawable(getResources().getDrawable(R.drawable.login_bg));
             mProgressDialog.show();
             mProgressDialog.setContentView(R.layout.progress_splash);
         } else {
@@ -36,6 +35,7 @@ public class BaseActivity extends AppCompatActivity{
     }
 
     public void hideProgress(){
+        Log.d(TAG, "Hide progress");
 
         if (mProgressDialog != null){
             if (mProgressDialog.isShowing()){

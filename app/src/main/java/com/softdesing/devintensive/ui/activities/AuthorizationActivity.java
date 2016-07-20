@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.softdesing.devintensive.R;
 import com.softdesing.devintensive.data.managers.DataManager;
+import com.softdesing.devintensive.data.managers.PreferencesManager;
 import com.softdesing.devintensive.data.network.req.UserLoginReq;
 import com.softdesing.devintensive.data.network.res.UserListRes;
 import com.softdesing.devintensive.data.network.res.UserModelRes;
@@ -22,6 +23,7 @@ import com.softdesing.devintensive.data.storage.models.User;
 import com.softdesing.devintensive.data.storage.models.UserDao;
 import com.softdesing.devintensive.utils.ConstantManager;
 import com.softdesing.devintensive.utils.NetworkStatusChecker;
+import com.squareup.otto.Bus;
 
 
 import java.util.ArrayList;
@@ -40,6 +42,7 @@ public class AuthorizationActivity extends BaseActivity implements View.OnClickL
     private DataManager mDataManager;
     private RepositoryDao mRepositoryDao;
     private UserDao mUserDao;
+    private Bus mBus;
 
     @BindView(R.id.auth_button) Button mSignIn;
     @BindView(R.id.remember_txt) TextView mRememberPassword;
@@ -50,8 +53,11 @@ public class AuthorizationActivity extends BaseActivity implements View.OnClickL
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate");
+
+        showProgress();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_authorization);
+        mBus = new Bus();
 
         ButterKnife.bind(this);
         mDataManager = DataManager.getINSTANCE();
@@ -60,6 +66,8 @@ public class AuthorizationActivity extends BaseActivity implements View.OnClickL
 
         mRememberPassword.setOnClickListener(this);
         mSignIn.setOnClickListener(this);
+
+        signInWithToken();
     }
 
     @Override
@@ -89,32 +97,32 @@ public class AuthorizationActivity extends BaseActivity implements View.OnClickL
         startActivity(chosenIntent);
     }
 
-    /**
-     * метод вызывается при успешной авторизации
-     * @param userModel
-     */
-    private void loginSuccess(UserModelRes userModel){
-        Log.d(TAG, "loginSuccess");
 
-        mDataManager.getPreferencesManager().saveAuthToken(userModel.getData().getToken());
-        mDataManager.getPreferencesManager().saveUserId(userModel.getData().getUser().getId());
+    private void saveUserModelData(UserModelRes userModel){
+        Log.d(TAG, "Saving token...");
+        PreferencesManager prefManager = mDataManager.getPreferencesManager();
+        UserModelRes.Data userData = userModel.getData();
+        prefManager.saveAuthToken(userData.getToken());
 
+        Log.d(TAG, "Saving user id...");
+        UserModelRes.User user = userData.getUser();
+        String userId = user.getId();
+        prefManager.saveUserId(userId);
+
+        Log.d(TAG, "Saving other data...");
         saveUserValues(userModel);
         saveUserProfileData(userModel);
         saveUserInDb();
+    }
+    /**
+     * метод вызывается при успешной авторизации
+     */
+    private void loginSuccess(){
+        Log.d(TAG, "loginSuccess");
 
         Intent loginIntent = new Intent(AuthorizationActivity.this, MainActivity.class);
         startActivity(loginIntent);
-
-//        Handler handler = new Handler();
-//        handler.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                //Intent loginIntent = new Intent(this, MainActivity.class);
-//                Intent loginIntent = new Intent(AuthorizationActivity.this, UserListActivity.class);
-//                startActivity(loginIntent);
-//            }
-//        }, AppConfig.START_DELAY);
+        AuthorizationActivity.this.finish();
     }
 
     private void signIn(){
@@ -127,7 +135,8 @@ public class AuthorizationActivity extends BaseActivity implements View.OnClickL
                 @Override
                 public void onResponse(Call<UserModelRes> call, Response<UserModelRes> response) {
                     if (response.code() == 200){
-                        loginSuccess(response.body());
+                        saveUserModelData(response.body());
+                        loginSuccess();
                     } else if (response.code() == 404){
                         showSnackBar("Неверный логин или пароль");
                     } else {
@@ -238,5 +247,36 @@ public class AuthorizationActivity extends BaseActivity implements View.OnClickL
             reposirories.add(new Repository(repositoryRes, userId));
         }
         return reposirories;
+    }
+
+    private void signInWithToken(){
+        Log.d(TAG, "signInWithToken");
+
+        if (NetworkStatusChecker.isNetworkAvailable(this)) {
+
+            Call<UserModelRes> call = mDataManager.loginWithToken(mDataManager.getPreferencesManager().getUserId());
+            call.enqueue(new Callback<UserModelRes>() {
+                @Override
+                public void onResponse(Call<UserModelRes> call, Response<UserModelRes> response) {
+                    if (response.code() == 200) {
+                        loginSuccess();
+                    } else {
+
+                        hideProgress();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<UserModelRes> call, Throwable t) {
+                    hideProgress();
+                    showSnackBar("Что-то пошло не так!");
+                    t.printStackTrace();
+                    Log.e(TAG, t.toString());
+                }
+            });
+        } else {
+            hideProgress();
+            showSnackBar("Сеть на данный момент недоступна, попробуйте позже");
+        }
     }
 }

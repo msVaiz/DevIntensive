@@ -19,6 +19,9 @@ public interface RestService {
     @POST("login")
     Call<UserModelRes> loginUser (@Body UserLoginReq req);
 
+    @GET("user/{userId}")
+    Call<UserModelRes> loginWithToken (@Path("userId") String userId);
+
     @Multipart
     @POST("user/{userId}/publicValues/profilePhoto")
     Call<UploadPhotoRes> uploadPhoto (@Path ("userId") String userId,
