@@ -23,8 +23,6 @@ public class ServiceGenerator {
     /**
      * метод создает rest сервис
      * @param serviceClass - интерфейс который реализует retrofit запросы
-     * @param <S>
-     * @return
      */
     public static <S> S createService(Class<S> serviceClass){
 

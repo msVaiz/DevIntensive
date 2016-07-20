@@ -29,4 +29,7 @@
     <string name="authorization.password_text">Пароль</string>
     <string name="authorization.forget_password_text">Забыли пароль?</string>
     <string name="search_txt">Поиск пользователя</string>
+    <string name="view.txt">ПРОСМОТР</string>
+    <string name="lines_code.txt">Строк кода</string>
+    <string name="fullname_txt">Фамилия Имя</string>
 </resources>

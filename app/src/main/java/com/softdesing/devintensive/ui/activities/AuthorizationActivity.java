@@ -42,7 +42,6 @@ public class AuthorizationActivity extends BaseActivity implements View.OnClickL
     private DataManager mDataManager;
     private RepositoryDao mRepositoryDao;
     private UserDao mUserDao;
-    private Bus mBus;
 
     @BindView(R.id.auth_button) Button mSignIn;
     @BindView(R.id.remember_txt) TextView mRememberPassword;
@@ -57,7 +56,6 @@ public class AuthorizationActivity extends BaseActivity implements View.OnClickL
         showProgress();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_authorization);
-        mBus = new Bus();
 
         ButterKnife.bind(this);
         mDataManager = DataManager.getINSTANCE();
@@ -82,7 +80,7 @@ public class AuthorizationActivity extends BaseActivity implements View.OnClickL
         }
     }
 
-    private void showSnackBar(String message){
+    private void showSnackbar(String message){
         Snackbar.make(mCoordinatorLayout, message, Snackbar.LENGTH_LONG).show();
     }
 
@@ -119,7 +117,6 @@ public class AuthorizationActivity extends BaseActivity implements View.OnClickL
      */
     private void loginSuccess(){
         Log.d(TAG, "loginSuccess");
-
         Intent loginIntent = new Intent(AuthorizationActivity.this, MainActivity.class);
         startActivity(loginIntent);
         AuthorizationActivity.this.finish();
@@ -135,24 +132,24 @@ public class AuthorizationActivity extends BaseActivity implements View.OnClickL
                 @Override
                 public void onResponse(Call<UserModelRes> call, Response<UserModelRes> response) {
                     if (response.code() == 200){
+                        showProgress();
                         saveUserModelData(response.body());
+                        hideProgress();
                         loginSuccess();
                     } else if (response.code() == 404){
-                        showSnackBar("Неверный логин или пароль");
+                        showSnackbar("Неверный логин или пароль");
                     } else {
-                        showSnackBar("Что-то пошло не так!");
+                        showSnackbar("Что-то пошло не так!");
                     }
                 }
 
                 @Override
                 public void onFailure(Call<UserModelRes> call, Throwable t) {
-                    showSnackBar("Что-то пошло не так!");
-                    t.printStackTrace();
-                    Log.e(TAG, t.toString());
+                    showErrors("Что-то пошло не так!", t);
                 }
             });
         } else {
-            showSnackBar("Сеть на данный момент недоступна, попробуйте позже");
+            showSnackbar("Сеть на данный момент недоступна, попробуйте позже");
         }
     }
 
@@ -215,26 +212,23 @@ public class AuthorizationActivity extends BaseActivity implements View.OnClickL
                             allRepositories.addAll(getRepoListFromUserRes(userRes));
                             allUsers.add(new User(userRes));
                         }
-
                         mRepositoryDao.insertOrReplaceInTx(allRepositories);
                         mUserDao.insertOrReplaceInTx(allUsers);
 
                     } else {
-
-                        showSnackBar("Список пользователей не может быть получен");
+                        showSnackbar("Список пользователей не может быть получен");
                         Log.e(TAG, "onResponse: " + String.valueOf(response.errorBody().source()));
                     }
 
                 } catch (NullPointerException e) {
                     e.printStackTrace();
-                    showSnackBar("Что-то пошло не так");
+                    showSnackbar("Что-то пошло не так");
                 }
             }
 
             @Override
             public void onFailure(Call<UserListRes> call, Throwable t) {
-                Log.e(TAG, "onFailure() " + t.toString());
-                showSnackBar("Неудалось загрузить данные с сервера");
+                showErrors("Неудалось загрузить данные с сервера", t);
             }
         });
     }
@@ -261,7 +255,6 @@ public class AuthorizationActivity extends BaseActivity implements View.OnClickL
                     if (response.code() == 200) {
                         loginSuccess();
                     } else {
-
                         hideProgress();
                     }
                 }
@@ -269,14 +262,12 @@ public class AuthorizationActivity extends BaseActivity implements View.OnClickL
                 @Override
                 public void onFailure(Call<UserModelRes> call, Throwable t) {
                     hideProgress();
-                    showSnackBar("Что-то пошло не так!");
-                    t.printStackTrace();
-                    Log.e(TAG, t.toString());
+                    showErrors("Что-то пошло не так!", t);
                 }
             });
         } else {
             hideProgress();
-            showSnackBar("Сеть на данный момент недоступна, попробуйте позже");
+            showSnackbar("Сеть на данный момент недоступна, попробуйте позже");
         }
     }
 }

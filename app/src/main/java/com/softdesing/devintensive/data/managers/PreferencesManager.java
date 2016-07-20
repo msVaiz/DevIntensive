@@ -42,6 +42,7 @@ public class PreferencesManager {
     }
 
     public List<String> loadUserProfileData(){
+
         List<String> userFields = new ArrayList<>();
         userFields.add(mSharedPreferences.getString(ConstantManager.USER_PHONE_KEY, ""));
         userFields.add(mSharedPreferences.getString(ConstantManager.USER_MAIL_KEY, ""));
@@ -59,7 +60,8 @@ public class PreferencesManager {
     }
 
     public Uri loadUserPhoto(){
-        return Uri.parse(mSharedPreferences.getString(ConstantManager.USER_PHOTO_KEY, "android.resource://com.softdesign.devintensive/drawable/user_photo"));
+        return Uri.parse(mSharedPreferences.getString(ConstantManager.USER_PHOTO_KEY,
+                "android.resource://com.softdesign.devintensive/drawable/user_photo"));
     }
 
     public void saveUserProfileValues(int[] userValues){
@@ -73,6 +75,7 @@ public class PreferencesManager {
     }
 
     public List<String> loadUserProfileValues(){
+
         List<String> userValues = new ArrayList<>();
         userValues.add(mSharedPreferences.getString(ConstantManager.USER_RATING_VALUE, "0"));
         userValues.add(mSharedPreferences.getString(ConstantManager.USER_CODE_LINES_VALUE, "0"));
@@ -87,6 +90,7 @@ public class PreferencesManager {
      * @param authToken - токен авторизации
      */
     public void saveAuthToken(String authToken){
+
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.putString(ConstantManager.AUTH_TOKEN_KEY, authToken);
         editor.apply();
@@ -94,7 +98,7 @@ public class PreferencesManager {
 
     /**
      * метод получения токена из SharedPreferences
-     * @return- токен авторизации
+     * @return - токен авторизации
      */
     public String getAuthToken(){
         return mSharedPreferences.getString(ConstantManager.AUTH_TOKEN_KEY, "null");
@@ -105,6 +109,7 @@ public class PreferencesManager {
      * @param userId - идентификатор пользователя
      */
     public void saveUserId(String userId){
+
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.putString(ConstantManager.USER_ID_KEY, userId);
         editor.apply();
@@ -119,13 +124,15 @@ public class PreferencesManager {
     }
 
     public void saveUserAvatar(Uri uri) {
+
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.putString(ConstantManager.USER_AVATAR_KEY, uri.toString());
         editor.apply();
     }
 
     public Uri loadUserAvatar() {
-        return Uri.parse(mSharedPreferences.getString(ConstantManager.USER_AVATAR_KEY, "android.resource://com.softdesign.devintensive/drawable/user_avatar"));
+        return Uri.parse(mSharedPreferences.getString(ConstantManager.USER_AVATAR_KEY,
+                "android.resource://com.softdesign.devintensive/drawable/user_avatar"));
     }
 
     public void saveUserName (String[] name){

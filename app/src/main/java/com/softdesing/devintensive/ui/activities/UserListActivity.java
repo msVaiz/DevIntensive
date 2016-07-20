@@ -38,9 +38,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class UserListActivity extends BaseActivity {
 
@@ -156,8 +153,6 @@ public class UserListActivity extends BaseActivity {
             }
         });
         View headerView = navigationView.inflateHeaderView(R.layout.drawer_header);
-        //View headerView = navigationView.getHeaderView(0);
-        //Object a = headerView.findViewById(R.id.user_ava);
         ImageView mUserAvatar = (ImageView) headerView.findViewById(R.id.user_ava);
         TextView mUserName = (TextView) headerView.findViewById(R.id.user_name_txt);
         TextView mUserEmail = (TextView) headerView.findViewById(R.id.user_email_txt);
@@ -238,6 +233,15 @@ public class UserListActivity extends BaseActivity {
             mHandler.postDelayed(searchUsers, 0);
         } else {
             mHandler.postDelayed(searchUsers, ConstantManager.SEARCH_DELAY);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(mNavigationDrawer.isDrawerOpen(GravityCompat.START)){
+            mNavigationDrawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
         }
     }
 }

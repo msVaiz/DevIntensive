@@ -1,6 +1,5 @@
 package com.softdesing.devintensive.ui.activities;
 
-
 import android.app.ProgressDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -13,11 +12,6 @@ public class BaseActivity extends AppCompatActivity{
 
     static final String TAG = ConstantManager.TAG_PREFIX + "BaseActivity";
     protected ProgressDialog mProgressDialog;
-
-    /**
-     * Dispatch onStart() to all fragments.  Ensure any created loaders are
-     * now started.
-     */
 
     public void showProgress(){
         Log.d(TAG, "Show progress");
@@ -44,9 +38,9 @@ public class BaseActivity extends AppCompatActivity{
         }
     }
 
-    public void showErrors(String message, Exception error){
+    public void showErrors(String message, Throwable t){
         showToast(message);
-        Log.e(TAG, String.valueOf(error));
+        Log.e(TAG, String.valueOf(t));
     }
 
     public void showToast(String message){

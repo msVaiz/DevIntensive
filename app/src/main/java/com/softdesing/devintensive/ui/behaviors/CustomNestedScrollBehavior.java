@@ -1,6 +1,5 @@
 package com.softdesing.devintensive.ui.behaviors;
 
-
 import android.content.Context;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;

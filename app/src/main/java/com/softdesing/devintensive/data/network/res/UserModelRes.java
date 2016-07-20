@@ -1,6 +1,5 @@
 package com.softdesing.devintensive.data.network.res;
 
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
