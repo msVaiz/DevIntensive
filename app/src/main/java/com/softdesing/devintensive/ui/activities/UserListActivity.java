@@ -21,15 +21,18 @@ import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.TextView;
 
+import com.redmadrobot.chronos.ChronosConnector;
 import com.softdesing.devintensive.R;
 import com.softdesing.devintensive.data.managers.DataManager;
-import com.softdesing.devintensive.data.network.res.UserListRes;
+import com.softdesing.devintensive.data.storage.LoadUserListFromDbOperation;
 import com.softdesing.devintensive.data.storage.models.User;
 import com.softdesing.devintensive.data.storage.models.UserDTO;
 import com.softdesing.devintensive.ui.adapters.UsersAdapter;
 import com.softdesing.devintensive.utils.ConstantManager;
 import com.softdesing.devintensive.utils.TransformToCircle;
 import com.squareup.picasso.Picasso;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -54,10 +57,13 @@ public class UserListActivity extends BaseActivity {
     private MenuItem mSearchItem;
     private String mQuery;
     private Handler mHandler;
+    private ChronosConnector mConnector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mConnector = new ChronosConnector();
+        mConnector.onCreate(this, savedInstanceState);
         setContentView(R.layout.activity_user_list);
         Log.d(TAG, "onCreate");
 
@@ -71,6 +77,24 @@ public class UserListActivity extends BaseActivity {
         setupToolbar();
         setupDrawer();
         loadUsersFromDb();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mConnector.onResume();
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NotNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mConnector.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onPause() {
+        mConnector.onPause();
+        super.onPause();
     }
 
     @Override
@@ -88,47 +112,28 @@ public class UserListActivity extends BaseActivity {
     private void loadUsersFromDb() {
         Log.d(TAG, "loadUsersFromDb");
 
-        if (mDataManager.getUserListFromDb().size() == 0){
-            showSnackbar("Список пользователей не может быть загружен");
-        } else {
-
-            showUsers(mDataManager.getUserListFromDb());
+        try {
+            mConnector.runOperation(new LoadUserListFromDbOperation(), false);
+        } catch (Exception e){
+            Log.e(TAG, e.toString());
+            e.printStackTrace();
         }
+    }
 
-//        showProgress();
-//        Call<UserListRes> call = mDataManager.getUserListFromNetwork();
-//        call.enqueue(new Callback<UserListRes>() {
-//            @Override
-//            public void onResponse(Call<UserListRes> call, Response<UserListRes> response) {
-//                Log.d(TAG, "onResponse() SUCCSESS");
-//                try {
-//                    mUsers = response.body().getData();
-//                    mUsersAdapter = new UsersAdapter(mUsers, new UsersAdapter.UserViewHolder.CustomClickListener() {
-//                        @Override
-//                        public void onUserItemClickListener(int position) {
-//                            UserDTO userDTO = new UserDTO(mUsers.get(position));
-//
-//                            Intent profileIntent = new Intent(UserListActivity.this, ProfileUserActivity.class);
-//                            profileIntent.putExtra(ConstantManager.PARCELABLE_KEY, userDTO);
-//                            startActivity(profileIntent);
-//                        }
-//                    });
-//                    mRecyclerView.setAdapter(mUsersAdapter);
-//                    hideProgress();
-//                } catch (NullPointerException e) {
-//                    hideProgress();
-//                    Log.e(TAG, e.toString());
-//                    showSnackbar("Что-то пошло не так");
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<UserListRes> call, Throwable t) {
-//                Log.e(TAG, "onFailure() " + t.toString());
-//                hideProgress();
-//                showSnackbar("Неудалось загрузить данные с сервера");
-//            }
-//        });
+    public void onOperationFinished(final LoadUserListFromDbOperation.Result result) {
+        Log.d(TAG, "onOperationFinished");
+
+        if (result.isSuccessful()) {
+            mUsers = result.getOutput();
+            if (mUsers.size() == 0){
+                showSnackbar("Список пользователей не может быть загружен");
+            } else {
+                showUsers(mUsers);
+            }
+        } else {
+            Log.e(TAG, result.getErrorMessage());
+            showSnackbar(result.getErrorMessage());
+        }
     }
 
     private void setupDrawer() {

@@ -2,8 +2,6 @@ package com.softdesing.devintensive.ui.activities;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.nfc.Tag;
-import android.os.Handler;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.os.Bundle;
@@ -22,7 +20,6 @@ import com.softdesing.devintensive.data.storage.models.Repository;
 import com.softdesing.devintensive.data.storage.models.RepositoryDao;
 import com.softdesing.devintensive.data.storage.models.User;
 import com.softdesing.devintensive.data.storage.models.UserDao;
-import com.softdesing.devintensive.utils.AppConfig;
 import com.softdesing.devintensive.utils.ConstantManager;
 import com.softdesing.devintensive.utils.NetworkStatusChecker;
 
