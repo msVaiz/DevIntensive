@@ -1,6 +1,5 @@
 package com.softdesing.devintensive.data.network.res;
 
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -115,6 +114,10 @@ public class UserModelRes {
 
         public String getGit() {
             return git;
+        }
+
+        public String getId() {
+            return id;
         }
     }
 

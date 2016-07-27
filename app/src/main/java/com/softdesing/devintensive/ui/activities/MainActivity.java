@@ -59,7 +59,6 @@ import butterknife.ButterKnife;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -147,7 +146,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
         initUserInfoValues();
         Picasso.with(this)
                 .load(mDataManager.getPreferencesManager().loadUserPhoto())
+                .error(R.drawable.user_bg)
                 .placeholder(R.drawable.user_bg)
+                .fit()
+                .centerCrop()
                 .into(mProfileImage);
 
         if(savedInstanceState == null){
@@ -246,22 +248,26 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
 
             case R.id.call_img:
                 Intent callNumberIntent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + mUserPhone.getText().toString()));
-                startActivity(callNumberIntent);
+                Intent chosenIntentCall = Intent.createChooser(callNumberIntent, "Что использовать?");
+                startActivity(chosenIntentCall);
                 break;
 
             case R.id.send_img:
                 Intent sendEmailIntent = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:" + mUserMail.getText().toString()));
-                startActivity(sendEmailIntent);
+                Intent chosenIntentSend = Intent.createChooser(sendEmailIntent, "Что использовать?");
+                startActivity(chosenIntentSend);
                 break;
 
             case R.id.vk_img:
                 Intent openVkProfileIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://" + mUserVK.getText().toString()));
-                startActivity(openVkProfileIntent);
+                Intent chosenIntentVk = Intent.createChooser(openVkProfileIntent, "Что использовать?");
+                startActivity(chosenIntentVk);
                 break;
 
             case R.id.github_img:
                 Intent openGithubProfileIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://" + mUserGit.getText().toString()));
-                startActivity(openGithubProfileIntent);
+                Intent chosenIntentGit = Intent.createChooser(openGithubProfileIntent, "Что использовать?");
+                startActivity(chosenIntentGit);
                 break;
         }
     }
@@ -296,15 +302,20 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem item) {
-                showSnackBar(item.getTitle().toString());
-                item.setChecked(true);
-                mNavigationDrawer.closeDrawer(GravityCompat.START);
+                switch (item.getItemId()) {
+                    case R.id.team_menu:
+                        mNavigationDrawer.closeDrawer(GravityCompat.START);
+                        Intent intent = new Intent(MainActivity.this, UserListActivity.class);
+                        startActivity(intent);
+                        break;
+                    case R.id.user_profile_menu:
+                        mNavigationDrawer.closeDrawer(GravityCompat.START);
+                        break;
+                }
                 return false;
             }
         });
         View headerView = navigationView.inflateHeaderView(R.layout.drawer_header);
-        //View headerView = navigationView.getHeaderView(0);
-        //Object a = headerView.findViewById(R.id.user_ava);
         ImageView mUserAvatar = (ImageView) headerView.findViewById(R.id.user_ava);
         TextView mUserName = (TextView) headerView.findViewById(R.id.user_name_txt);
         TextView mUserEmail = (TextView) headerView.findViewById(R.id.user_email_txt);
@@ -312,7 +323,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
         String temp = mDataManager.getPreferencesManager().loadUserName()[0] + " " + mDataManager.getPreferencesManager().loadUserName()[1];
         mUserName.setText(temp);
         mUserEmail.setText(mDataManager.getPreferencesManager().loadUserProfileData().get(1));
-
 
         Picasso.with(this)
                 .load(mDataManager.getPreferencesManager().loadUserAvatar())
@@ -324,9 +334,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
 
     /**
      * Получение результата из другой Activity (фото из камеры или галлереи)
-     * @param requestCode
-     * @param resultCode
-     * @param data
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -426,7 +433,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
                 else {
                     mUserPhone.setError("Введите в формате\n+7 XXX XXX XX XX или\n8 XXX XXX XX XX");
                 }
-
             }
         });
 
@@ -516,6 +522,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
             }
         }
     }
+
     private void sendUserPhotoToServer(){
         String userId = mDataManager.getPreferencesManager().getUserId();
 
@@ -551,8 +558,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
                 Log.d(TAG, "upload fail. " + t.getMessage());
             }
         });
-
-        // mProfileImage.getDrawable()
     }
 
     private boolean CheckPhone(String phone) {
@@ -624,7 +629,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
                 mPhotoFile = createImageFile();
             } catch (IOException e) {
                 e.printStackTrace();
-                //// TODO: 7/5/2016 обработать ошибку
             }
             if (mPhotoFile != null){
                 takeCaptureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mPhotoFile));
@@ -651,12 +655,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == ConstantManager.CAMERA_REQUEST_PERMISSION_CODE && grantResults.length == 2 ){
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                //// TODO: 7/5/2016 тут обрабатываем разрешение (разрешение получено)
+                showToast("Необходимо разрешение на работу с камерой");
             }
         }
 
         if (grantResults[1] == PackageManager.PERMISSION_GRANTED){
-            //// TODO: 7/5/2016 тут обрабатываем разрешение (разрешение получено)
+            showToast("Необходимо разрешение на запись");
         }
     }
 
@@ -740,14 +744,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
         return image;
     }
 
-    /**
-     *  метод размещает
-     *  @param selectedImage
-     */
 
     private void insertProfileImage(Uri selectedImage) {
         Picasso.with(this)
                 .load(selectedImage)
+                .fit()
+                .centerCrop()
                 .into(mProfileImage);
 
         flag = true;

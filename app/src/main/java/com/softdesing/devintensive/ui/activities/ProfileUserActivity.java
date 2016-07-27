@@ -1,7 +1,6 @@
 package com.softdesing.devintensive.ui.activities;
 
 import android.content.Intent;
-import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -10,10 +9,9 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ListView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.softdesing.devintensive.R;
@@ -40,7 +38,7 @@ public class ProfileUserActivity extends BaseActivity {
     @BindView(R.id.collapsing_toolbar) CollapsingToolbarLayout mCollapsingToolbarLayout;
     @BindView(R.id.main_coordinator_container) CoordinatorLayout mCoordinatorLayout;
 
-    @BindView(R.id.repositories_list) ListView mRepoListView;
+    @BindView(R.id.repositories_list) LinearLayout mRepoListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,18 +69,23 @@ public class ProfileUserActivity extends BaseActivity {
 
         final List<String> repositories = userDTO.getRepositories();
         final RepositoriesAdapter repositoriesAdapter = new RepositoriesAdapter(this, repositories);
-        mRepoListView.setAdapter(repositoriesAdapter);
 
-        mRepoListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                EditText editText = (EditText) view.findViewById(R.id.repository_et);
-                String url = editText.getText().toString();
-                Uri uri = Uri.parse("http://" + url);
-                Intent openRepositoryIntent = new Intent(Intent.ACTION_VIEW, uri);
-                startActivity(openRepositoryIntent);
-            }
-        });
+        for (int i = 0; i < repositoriesAdapter.getCount(); i++) {
+            View item = repositoriesAdapter.getView(i, null, null);
+
+            item.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    EditText editText = (EditText) view.findViewById(R.id.repository_et);
+                    String url = editText.getText().toString();
+                    Uri uri = Uri.parse("http://" + url);
+                    Intent openRepositoryIntent = new Intent(Intent.ACTION_VIEW, uri);
+                    Intent chosenIntent = Intent.createChooser(openRepositoryIntent, "Что использовать?");
+                    startActivity(chosenIntent);
+                }
+            });
+            mRepoListView.addView(item);
+        }
 
         mUserBio.setText(userDTO.getBio());
         mUserRating.setText(userDTO.getRating());
@@ -90,13 +93,12 @@ public class ProfileUserActivity extends BaseActivity {
         mUserProjects.setText(userDTO.getProjects());
         mCollapsingToolbarLayout.setTitle(userDTO.getFullName());
 
-        Point size = getUserProfileImageSize();
         Picasso.with(this)
                 .load(userDTO.getPhoto())
-                .resize(size.x, 0)
-                //.centerCrop()
-                .placeholder(R.drawable.user_bg)
                 .error(R.drawable.user_bg)
+                .placeholder(R.drawable.user_bg)
+                .fit()
+                .centerCrop()
                 .into(mProfileImage);
     }
 }
